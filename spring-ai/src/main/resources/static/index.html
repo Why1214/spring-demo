@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Welcome to DS</h1>
+
+    <input type="text" id="inputText" placeholder="请输入内容..." style="height: 50px; width: 500px; background-color: aquamarine"/>
+    <button onclick="sendText()" style="height: 50px; width: 80px; background-color: blueviolet">发送</button>
+    <div id="content" style="width: 1000px; height: 500px; background-color: blanchedalmond">
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        function sendText() {
+            const text = document.getElementById("inputText").value;
+
+            const eventSource = new EventSource("http://localhost:8080/deepseek/chat/stream?message="+text);
+
+            // 监听 data 事件
+            eventSource.onmessage = function (event) {
+                console.log("接收到数据：", event.data);
+                document.getElementById("content").innerHTML += event.data;
+            };
+
+            // 监听连接打开
+            eventSource.onopen = function () {
+                console.log("连接成功");
+            };
+
+            // 监听错误
+            eventSource.onerror = function (err) {
+                console.error("连接出错：", err);
+                eventSource.close();
+            };
+        }
+
+    </script>
+</body>
+</html>
